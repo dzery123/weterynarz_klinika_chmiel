@@ -9,6 +9,7 @@ public class Zwierze {
     private GatunekZwierzecia gatunek;
     private StatusZwierzecia status;
 
+
     public Zwierze(String imie, GatunekZwierzecia gatunek) {
         this.imie = imie;
         this.gatunek = gatunek;
