@@ -1,72 +1,188 @@
 package weterynarska_klinika.app;
 
 import weterynarska_klinika.enumy.GatunekZwierzecia;
-import weterynarska_klinika.model.KlinikaWetenaryjna;
-import weterynarska_klinika.model.Zwierze;
+import weterynarska_klinika.enumy.StatusZwierzecia;
+import weterynarska_klinika.enumy.RodzajPlatnosci;
+import weterynarska_klinika.model.*;
 
+import java.time.LocalDate;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         KlinikaWetenaryjna klinika = new KlinikaWetenaryjna();
-        System.out.println("Witamy w programie Narodoweej Kliniki Weterynarskiej obsługującej: Papugi, Psy, Chomiki i Koty!");
-        System.out.println("Czy chcesz dodać nowego zwierzaka? [T/N]");
-        String wybor = scanner.nextLine();
-        String imie = null;
-        GatunekZwierzecia gatunekZwierzecia = null;
-        if (wybor.equals("T")) {
-            System.out.println("Podaj imie swojego zwierzaka");
-            imie = scanner.nextLine();
-            System.out.println("Wybierz gatunek przez dopisanie odpowiedniej opcji:");
-            System.out.println("[1] Pies");
-            System.out.println("[2] Chomik");
-            System.out.println("[3] Kot");
-            System.out.println("[4] Papuga");
-            int gatunek = scanner.nextInt();
-            gatunekZwierzecia = null;
 
-            if (gatunek == 1) {
-                gatunekZwierzecia = GatunekZwierzecia.PIES;
-            } else if (gatunek == 2) {
-                gatunekZwierzecia = GatunekZwierzecia.CHOMIK;
-            } else if (gatunek == 3) {
-                gatunekZwierzecia = GatunekZwierzecia.KOT;
-            } else if (gatunek == 4) {
-                gatunekZwierzecia = GatunekZwierzecia.PAPUGA;
-            } else {
-                System.out.println("Błąd, nie ma takiego gatunku, chcesz go wprowadzić ponownie? [T/N]");
-                String blad = scanner.nextLine();
-                if (blad.equals("T")) {
-                    System.out.println("Wybierz gatunek przez dopisanie odpowiedniej opcji:");
-                    System.out.println("[1] Pies");
-                    System.out.println("[2] Chomik");
-                    System.out.println("[3] Kot");
-                    System.out.println("[4] Papuga");
-                    gatunek = scanner.nextInt();
+        Weterynarz w1 = new Weterynarz("Jan", "Kowalski", "Chirurgia");
+        Weterynarz w2 = new Weterynarz("Anna", "Nowak", "Szczepienia");
 
-                } else System.out.println("Błędne dodanie zwierzęcia");
+        klinika.dodajZwierze(new Zwierze("Fafik", GatunekZwierzecia.PIES));
+        klinika.dodajZwierze(new Zwierze("Puszek", GatunekZwierzecia.KOT));
+        klinika.dodajZwierze(new Zwierze("Artutek", GatunekZwierzecia.CHOMIK));
+        klinika.dodajZwierze(new Zwierze("Ćwik Maksiu", GatunekZwierzecia.PAPUGA));
 
+        boolean running = true;
 
+        while (running) {
+            System.out.println("\n=== MENU KLINIKI ===");
+            System.out.println("1. Dodaj nowego zwierzaka");
+            System.out.println("2. Pokaż wszystkich pacjentów");
+            System.out.println("3. Usuń zwierzaka");
+            System.out.println("4. Zmień status zwierzaka");
+            System.out.println("5. Dodaj wizytę");
+            System.out.println("6. Dodaj płatność dla zwierzaka");
+            System.out.println("7. Wyjście z programu");
+            System.out.print("Wybierz opcję: ");
+
+            String opcja = scanner.nextLine();
+
+            switch (opcja) {
+                case "1":
+                    System.out.print("Podaj imię zwierzaka: ");
+                    String imie = scanner.nextLine();
+
+                    GatunekZwierzecia gatunekZwierzecia = null;
+                    while (gatunekZwierzecia == null) {
+                        System.out.println("Wybierz gatunek:");
+                        System.out.println("[1] Pies");
+                        System.out.println("[2] Chomik");
+                        System.out.println("[3] Kot");
+                        System.out.println("[4] Papuga");
+                        System.out.print("Twój wybór: ");
+
+                        String input = scanner.nextLine();
+                        switch (input) {
+                            case "1" -> gatunekZwierzecia = GatunekZwierzecia.PIES;
+                            case "2" -> gatunekZwierzecia = GatunekZwierzecia.CHOMIK;
+                            case "3" -> gatunekZwierzecia = GatunekZwierzecia.KOT;
+                            case "4" -> gatunekZwierzecia = GatunekZwierzecia.PAPUGA;
+                            default -> System.out.println("Nieprawidłowa opcja, spróbuj ponownie.");
+                        }
+                    }
+
+                    Zwierze nowe = new Zwierze(imie, gatunekZwierzecia);
+                    klinika.dodajZwierze(nowe);
+                    System.out.println("Dodano zwierzaka: " + nowe);
+                    break;
+
+                case "2":
+                    System.out.println("\nLista pacjentów:");
+                    klinika.pokazPacjentow();
+                    break;
+
+                case "3":
+                    System.out.print("Podaj imię zwierzaka do usunięcia: ");
+                    String imieDoUsuniecia = scanner.nextLine();
+                    Zwierze doUsuniecia = klinika.znajdzPoImieniu(imieDoUsuniecia);
+                    if (doUsuniecia != null) {
+                        klinika.usunZwierze(doUsuniecia);
+                        System.out.println("Usunięto zwierzaka: " + doUsuniecia.getImie());
+                    } else {
+                        System.out.println("Nie znaleziono zwierzaka o imieniu: " + imieDoUsuniecia);
+                    }
+                    break;
+
+                case "4":
+                    System.out.print("Podaj imię zwierzaka do zmiany statusu: ");
+                    String imieStatus = scanner.nextLine();
+                    Zwierze doZmianyStatusu = klinika.znajdzPoImieniu(imieStatus);
+                    if (doZmianyStatusu != null) {
+                        System.out.println("Wybierz nowy status:");
+                        System.out.println("[1] PRZYJETY");
+                        System.out.println("[2] W_TRAKCIE_LECZENIA");
+                        System.out.println("[3] W_ZABIEGU");
+                        System.out.println("[4] WYPISANY");
+                        String statusInput = scanner.nextLine();
+                        StatusZwierzecia status = switch (statusInput) {
+                            case "1" -> StatusZwierzecia.PRZYJETY;
+                            case "2" -> StatusZwierzecia.W_TRAKCIE_LECZENIA;
+                            case "3" -> StatusZwierzecia.W_ZABIEGU;
+                            case "4" -> StatusZwierzecia.WYPISANY;
+                            default -> {
+                                System.out.println("Nieprawidłowa opcja. Status nie zmieniony.");
+                                yield null;
+                            }
+                        };
+                        if (status != null) {
+                            StatusManager.zmienStatus(doZmianyStatusu, status);
+                            System.out.println("Status zmieniony: " + doZmianyStatusu);
+                        }
+                    } else {
+                        System.out.println("Nie znaleziono zwierzaka o imieniu: " + imieStatus);
+                    }
+                    break;
+
+                case "5":
+                    System.out.print("Podaj imię zwierzaka do dodania wizyty: ");
+                    String imieWizyta = scanner.nextLine();
+                    Zwierze pacjentWizyta = klinika.znajdzPoImieniu(imieWizyta);
+                    if (pacjentWizyta != null) {
+                        System.out.print("Podaj opis wizyty: ");
+                        String opis = scanner.nextLine();
+                        System.out.print("Podaj cenę wizyty: ");
+                        double cena;
+                        try {
+                            cena = Double.parseDouble(scanner.nextLine());
+                        } catch (NumberFormatException e) {
+                            System.out.println("Niepoprawna cena. Operacja przerwana.");
+                            break;
+                        }
+
+                        Wizyta nowaWizyta = new Wizyta(LocalDate.now(), opis, pacjentWizyta, cena);
+                        klinika.dodajWizyte(nowaWizyta);
+                        System.out.println("Dodano wizytę: " + nowaWizyta);
+                    } else {
+                        System.out.println("Nie znaleziono zwierzaka o imieniu: " + imieWizyta);
+                    }
+                    break;
+
+                case "6":
+                    System.out.print("Podaj imię zwierzaka do dodania płatności: ");
+                    String imiePlatnosc = scanner.nextLine();
+                    Zwierze pacjentPlatnosc = klinika.znajdzPoImieniu(imiePlatnosc);
+                    if (pacjentPlatnosc != null) {
+                        System.out.print("Podaj kwotę płatności: ");
+                        double kwota;
+                        try {
+                            kwota = Double.parseDouble(scanner.nextLine());
+                        } catch (NumberFormatException e) {
+                            System.out.println("Niepoprawna kwota. Operacja przerwana.");
+                            break;
+                        }
+                        System.out.println("Wybierz rodzaj płatności:");
+                        System.out.println("[1] GOTÓWKA");
+                        System.out.println("[2] BLIK");
+                        System.out.println("[3] KARTA");
+                        String rodzajInput = scanner.nextLine();
+                        RodzajPlatnosci rodzaj = switch (rodzajInput) {
+                            case "1" -> RodzajPlatnosci.GOTOWKA;
+                            case "2" -> RodzajPlatnosci.BLIK;
+                            case "3" -> RodzajPlatnosci.KARTA;
+                            default -> {
+                                System.out.println("Niepoprawna opcja. Płatność nie dodana.");
+                                yield null;
+                            }
+                        };
+                        if (rodzaj != null) {
+                            Platnosc platnosc = new Platnosc(kwota, rodzaj);
+                            klinika.dodajPlatnosc(pacjentPlatnosc, platnosc);
+                            System.out.println("Dodano płatność: " + platnosc);
+                        }
+                    } else {
+                        System.out.println("Nie znaleziono zwierzaka o imieniu: " + imiePlatnosc);
+                    }
+                    break;
+
+                case "7":
+                    running = false;
+                    System.out.println("Koniec programu. Do widzenia!");
+                    break;
+
+                default:
+                    System.out.println("Nieprawidłowa opcja, spróbuj ponownie.");
             }
+        }
 
-
-        } else System.out.println("======================================================");
-
-
-        Zwierze z1 = new Zwierze("Fafik", GatunekZwierzecia.PIES);
-        Zwierze z2 = new Zwierze("Puszek", GatunekZwierzecia.KOT);
-        Zwierze z3 = new Zwierze("Artutek", GatunekZwierzecia.CHOMIK);
-        Zwierze z4 = new Zwierze("Ćwik Maksiu", GatunekZwierzecia.PAPUGA);
-        Zwierze twoje = new Zwierze(imie, gatunekZwierzecia);
-
-
-        klinika.dodajZwierze(z1);
-        klinika.dodajZwierze(z2);
-        klinika.dodajZwierze(z3);
-        klinika.dodajZwierze(z4);
-        klinika.dodajZwierze(twoje);
-
-
+        scanner.close();
     }
 }

@@ -9,12 +9,10 @@ public class KlinikaWetenaryjna {
 
     public void dodajZwierze(Zwierze z) {
         pacjenci.add(z);
-
     }
 
     public void usunZwierze(Zwierze z) {
         pacjenci.remove(z);
-
     }
 
     public Zwierze znajdzPoImieniu(String imie) {
@@ -30,14 +28,17 @@ public class KlinikaWetenaryjna {
         wizyty.add(w);
     }
 
+    public void dodajPlatnosc(Zwierze zwierze, Platnosc platnosc) {
+        zwierze.dodajPlatnosc(platnosc);
+    }
+
     public void pokazPacjentow() {
         pacjenci.forEach(z ->
-                System.out.println(z.getImie() + " (" + z.getGatunek() + ", status zwierzecia : " + z.getStatus() + ")")
+                System.out.println(z.getImie() + " (" + z.getGatunek() + ", status: " + z.getStatus() + ")")
         );
     }
 
     public void pokazWizyty() {
         wizyty.forEach(System.out::println);
     }
-
 }
